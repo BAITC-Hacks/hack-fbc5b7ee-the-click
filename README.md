@@ -103,6 +103,25 @@ Hackathon team repository for The Click
 
 При этом решение **не отправляет заказ поставщику автоматически**. Последнее решение остаётся за ответственным сотрудником.
 
+Чтобы пересобрать встроенные данные dashboard после обновления `recommended_orders.json`, запустите из корня репозитория:
+
+```bash
+python build_dashboard.py
+```
+
+Dashboard публикуется автоматически через GitHub Pages после push в `main`. После первого запуска workflow включите в настройках репозитория **Settings → Pages → Source → GitHub Actions**. Страница будет доступна по адресу:
+
+`https://baitc-hacks.github.io/hack-fbc5b7ee-the-click/`
+
+Полный пересчёт из исходных Excel-файлов выполняется одной командой:
+
+```bash
+pip install -r requirements.txt
+python main.py
+```
+
+Команда загружает данные обоих поставщиков, исключает разовые выбросы, компенсирует stockout, строит прогноз с сезонностью и трендом, учитывает остатки, товары в пути и MOQ, а затем обновляет `recommended_orders.csv`, `recommended_orders.json` и `dashboard.html`.
+
 ## Результат
 
 В результате мы получили автоматизированный pipeline, который проходит весь путь от исходных Excel-файлов до готового списка заказов.

@@ -1,21 +1,21 @@
 """
-Пересобирает dashboard.html, вставляя актуальный output/recommended_orders.json.
-Запускать после каждого нового прогона main.py:
+Пересобирает dashboard.html, вставляя актуальный recommended_orders.json.
+Запускать из корня репозитория после обновления данных:
 
-    python scripts/build_dashboard.py
+    python build_dashboard.py
 """
-import os
+from pathlib import Path
 import re
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-JSON_PATH = os.path.join(ROOT, "output", "recommended_orders.json")
-HTML_PATH = os.path.join(ROOT, "dashboard.html")
+ROOT = Path(__file__).resolve().parent
+JSON_PATH = ROOT / "recommended_orders.json"
+HTML_PATH = ROOT / "dashboard.html"
 
 
 def main():
-    with open(JSON_PATH, encoding="utf-8") as f:
+    with JSON_PATH.open(encoding="utf-8") as f:
         data_json = f.read()
-    with open(HTML_PATH, encoding="utf-8") as f:
+    with HTML_PATH.open(encoding="utf-8") as f:
         html = f.read()
 
     html = re.sub(
@@ -25,7 +25,7 @@ def main():
         flags=re.S,
     )
 
-    with open(HTML_PATH, "w", encoding="utf-8") as f:
+    with HTML_PATH.open("w", encoding="utf-8") as f:
         f.write(html)
     print(f"dashboard.html обновлён, встроено {len(data_json)} байт данных")
 

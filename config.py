@@ -6,11 +6,12 @@
 
 import os
 
-DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
+PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = PROJECT_DIR
 
 SUPPLIERS = {
     "Systeme Electric": {
-        "dir": os.path.join(DATA_DIR, "Systeme_electric"),
+        "dir": DATA_DIR,
         "monthly_sales": "Ежемесячные продажи в кол-м выражении SystemElectric 2024-2026.xlsx",
         "monthly_stock": "Ежемесячные остатки SystemElectric 2024-2026.xlsx",
         "transactions": "Динамика продаж_Syseme Electric_2025-2026.xlsx",
@@ -23,7 +24,7 @@ SUPPLIERS = {
         # для этого файла колонки с "в пути" ищем по подстроке
     },
     "IEK": {
-        "dir": os.path.join(DATA_DIR, "IEK"),
+        "dir": DATA_DIR,
         "monthly_sales": "Ежемесячные продажи в количественном выражении за последние 2 года.xlsx",
         "monthly_stock": "Ежемесячные остатки продукции за последние 2 года  ИЭК.xlsx",
         "transactions": "Динамика продаж_2025-2026.xlsx",
