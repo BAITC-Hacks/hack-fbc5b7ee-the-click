@@ -1,0 +1,198 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+
+def generate_demo_data():
+    """
+    Generate synthetic sales data for one SKU.
+    Includes one intentionally large one-time order.
+    """
+    np.random.seed(42)
+
+    dates = pd.date_range(
+        start="2026-01-01",
+        periods=90,
+        freq="D"
+    )
+
+    data = []
+
+    for date in dates:
+        quantity = max(0, int(np.random.normal(12, 3)))
+
+        data.append({
+            "date": date,
+            "sku": "CAB001",
+            "client_id": f"C{np.random.randint(1, 30):03d}",
+            "quantity": quantity
+        })
+
+    # One-time large order
+    data.append({
+        "date": pd.Timestamp("2026-02-15"),
+        "sku": "CAB001",
+        "client_id": "C_BIG",
+        "quantity": 250
+    })
+
+    return pd.DataFrame(data)
+
+
+def preprocess_sales(df):
+    """
+    Basic preprocessing and validation.
+    """
+    result = df.copy()
+
+    result["date"] = pd.to_datetime(result["date"])
+    result["quantity"] = pd.to_numeric(
+        result["quantity"],
+        errors="coerce"
+    )
+
+    result = result.dropna(
+        subset=["date", "sku", "quantity"]
+    )
+
+    result = result[
+        result["quantity"] >= 0
+    ].copy()
+
+    return result
+
+
+def detect_anomalies(df):
+    """
+    Detect unusually large transactions using IQR.
+    """
+    result = df.copy()
+
+    q1 = result["quantity"].quantile(0.25)
+    q3 = result["quantity"].quantile(0.75)
+    iqr = q3 - q1
+
+    upper_limit = q3 + 1.5 * iqr
+
+    result["is_anomaly"] = (
+        result["quantity"] > upper_limit
+    )
+
+    return result, upper_limit
+
+
+def calculate_regular_demand(df):
+    """
+    Exclude anomalous transactions from regular demand
+    without deleting them from the original sales history.
+    """
+    result = df.copy()
+
+    result["regular_quantity"] = np.where(
+        result["is_anomaly"],
+        0,
+        result["quantity"]
+    )
+
+    daily_sales = (
+        result
+        .groupby(["date", "sku"], as_index=False)
+        .agg(
+            raw_sales=("quantity", "sum"),
+            regular_sales=("regular_quantity", "sum")
+        )
+    )
+
+    return daily_sales
+
+
+def plot_sales(daily_sales):
+    """
+    Visualize raw sales and cleaned regular demand.
+    """
+    plt.figure(figsize=(12, 5))
+
+    plt.plot(
+        daily_sales["date"],
+        daily_sales["raw_sales"],
+        label="Raw sales"
+    )
+
+    plt.plot(
+        daily_sales["date"],
+        daily_sales["regular_sales"],
+        label="Regular demand"
+    )
+
+    plt.title("Raw Sales vs Regular Demand")
+    plt.xlabel("Date")
+    plt.ylabel("Quantity")
+    plt.legend()
+    plt.grid(alpha=0.3)
+    plt.tight_layout()
+    plt.show()
+
+
+def main():
+    print("=" * 55)
+    print("Inventory Replenishment MVP")
+    print("=" * 55)
+
+    # 1. Generate demo data
+    sales = generate_demo_data()
+
+    print(f"\nSales rows: {len(sales)}")
+    print("\nFirst rows:")
+    print(sales.head())
+
+    # 2. Preprocess
+    sales = preprocess_sales(sales)
+
+    print("\nData preprocessing completed.")
+
+    # 3. Detect anomalies
+    sales, anomaly_limit = detect_anomalies(sales)
+
+    anomalies = sales[
+        sales["is_anomaly"] == True
+    ]
+
+    print(
+        f"\nAnomaly threshold: {anomaly_limit:.2f}"
+    )
+
+    print(
+        f"Detected anomalies: {len(anomalies)}"
+    )
+
+    if not anomalies.empty:
+        print("\nAbnormal transactions:")
+        print(
+            anomalies[
+                [
+                    "date",
+                    "sku",
+                    "client_id",
+                    "quantity"
+                ]
+            ].to_string(index=False)
+        )
+
+    # 4. Calculate regular demand
+    daily_sales = calculate_regular_demand(sales)
+
+    print(
+        "\nRegular demand successfully calculated."
+    )
+
+    print("\nDaily sales sample:")
+    print(
+        daily_sales.head(10).to_string(index=False)
+    )
+
+    # 5. Show graph
+    plot_sales(daily_sales)
+
+
+if __name__ == "__main__":
+    main()
