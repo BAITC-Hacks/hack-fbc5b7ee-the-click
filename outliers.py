@@ -17,7 +17,10 @@
 import numpy as np
 import pandas as pd
 
-from . import config
+try:
+    from . import config
+except ImportError:
+    import config
 
 
 def flag_outliers(transactions: pd.DataFrame) -> pd.DataFrame:
