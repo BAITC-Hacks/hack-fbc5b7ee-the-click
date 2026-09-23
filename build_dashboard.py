@@ -1,5 +1,5 @@
 """
-Пересобирает dashboard.html, вставляя актуальный output/recommended_orders.json.
+Пересобирает dashboard.html, вставляя актуальный recommended_orders.json.
 Запускать после каждого нового прогона main.py:
 
     python scripts/build_dashboard.py
