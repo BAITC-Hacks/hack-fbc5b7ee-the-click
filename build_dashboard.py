@@ -8,7 +8,7 @@ import os
 import re
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-JSON_PATH = os.path.join(ROOT, "output", "recommended_orders.json")
+JSON_PATH = os.path.join(ROOT, "recommended_orders.json")
 HTML_PATH = os.path.join(ROOT, "dashboard.html")
 
 
