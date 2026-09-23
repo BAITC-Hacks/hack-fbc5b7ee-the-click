@@ -106,4 +106,4 @@ def run_pipeline() -> pd.DataFrame:
 
 if __name__ == "__main__":
     result = run_pipeline()
-    print(f"Готово: {len(result)} рекомендаций записано в CSV, JSON и dashboard.html")
+    print(f"Готово: {len(result)} рекомендаций записано в CSV, JSON и index.html")

@@ -9,7 +9,7 @@ import re
 
 ROOT = Path(__file__).resolve().parent
 JSON_PATH = ROOT / "recommended_orders.json"
-HTML_PATH = ROOT / "dashboard.html"
+HTML_PATH = ROOT / "index.html"
 
 
 def main():
@@ -27,7 +27,7 @@ def main():
 
     with HTML_PATH.open("w", encoding="utf-8") as f:
         f.write(html)
-    print(f"dashboard.html обновлён, встроено {len(data_json)} байт данных")
+    print(f"index.html обновлён, встроено {len(data_json)} байт данных")
 
 
 if __name__ == "__main__":

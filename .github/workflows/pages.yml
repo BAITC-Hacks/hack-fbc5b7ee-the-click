@@ -40,7 +40,7 @@ jobs:
       - name: Prepare dashboard
         run: |
           mkdir _site
-          cp dashboard.html _site/index.html
+          cp index.html _site/index.html
 
       - name: Upload dashboard
         uses: actions/upload-pages-artifact@v3
